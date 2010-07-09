@@ -18,7 +18,7 @@ def get_custom_validators():
 def listfiles(dir):
     return [x for x in os.listdir(dir) if os.path.isfile(os.path.join(dir, x))]
 
-class SpecStore(dict):
+class InfoStore(dict):
     def __init__(self, dir):
         super(type(self), self).__init__()
         self.dir = dir
@@ -26,21 +26,21 @@ class SpecStore(dict):
         self.item_container_dir = os.path.join(self.dir,'item')
         typenames = listfiles(self.types_dir)
         for typename in typenames:
-            spectype_file = os.path.join(self.types_dir, typename)
-            spectype = ConfigObj(spectype_file, list_values=False)
-            self[typename] = SpecType(self, typename, spectype)
+            typeinfo_file = os.path.join(self.types_dir, typename)
+            typeinfo = ConfigObj(typeinfo_file, list_values=False)
+            self[typename] = TypeInfo(self, typename, typeinfo)
             items_dir = os.path.join(self.item_container_dir, typename)
             itemnames = listfiles(items_dir)
             for itemname in itemnames:
-                specitem_file = os.path.join(items_dir, itemname)
-                print('File: %s' % specitem_file)
-                print('Spec: %s' % pformat(spectype))
-                specitem = ConfigObj(specitem_file, list_values=False, configspec = spectype)
-                self[typename][itemname] = SpecItem(self, itemname, specitem)
+                iteminfo_file = os.path.join(items_dir, itemname)
+                print('File: %s' % iteminfo_file)
+                print('Spec: %s' % pformat(typeinfo))
+                iteminfo = ConfigObj(iteminfo_file, list_values=False, configinfo = typeinfo)
+                self[typename][itemname] = ItemInfo(self, itemname, iteminfo)
         validator = Validator(get_custom_validators())
-        for typename, spectype in self.iteritems():
-            for itemname, specitem in spectype.iteritems():
-                result = specitem.spec.validate(validator)
+        for typename, typeinfo in self.iteritems():
+            for itemname, iteminfo in typeinfo.iteritems():
+                result = iteminfo.info.validate(validator)
                 if result != True:
                     print 'Result %s: %s' %(targettype, pformat(result))
                     print 'Errors: %s' %pformat(flatten_errors(config, result))
@@ -49,25 +49,26 @@ class SpecStore(dict):
     def __repr__(self):
         return "%s(%s))" % (self.__class__.__name__,super(type(self), self).__repr__())
 
-class SpecType(dict):
-    def __init__(self, store, name, spec):
+class TypeInfo(dict):
+    def __init__(self, store, name, info):
         super(type(self), self).__init__()
         self.store = store
         self.name = name
-        self.spec = spec
+        self.info = info
     def __str__(self):
         return super(type(self), self).__str__()
     def __repr__(self):
         return "%s(%s))" % (self.__class__.__name__,super(type(self), self).__repr__())
 
-class SpecItem():
-    def __init__(self, store, name, spec):
+class ItemInfo():
+    def __init__(self, store, name, info):
         super(type(self), self).__init__()
         self.store = store
         self.name = name
-        self.spec = spec
+        self.info = info
     def __str__(self):
-        return self.spec.__str__()
+        return self.info.__str__()
     def __repr__(self):
-        return "%s(%s))" % (self.__class__.__name__,self.spec.__repr__())
+        return "%s(%s))" % (self.__class__.__name__,self.info.__repr__())
+    
 

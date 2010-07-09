@@ -1,6 +1,6 @@
-from specstore import SpecStore
+from specstore import InfoStore
 from pprint import pprint
 import os
 
-s=SpecStore(os.path.dirname(__file__))
+s=InfoStore(os.path.dirname(__file__))
 pprint(s)
