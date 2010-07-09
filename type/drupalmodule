@@ -1,0 +1,3 @@
+[__many__]
+host=target(host)
+dir=dir()
