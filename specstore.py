@@ -33,8 +33,6 @@ class InfoStore(dict):
             itemnames = listfiles(items_dir)
             for itemname in itemnames:
                 iteminfo_file = os.path.join(items_dir, itemname)
-                print('File: %s' % iteminfo_file)
-                print('Spec: %s' % pformat(typeinfo))
                 iteminfo = ConfigObj(iteminfo_file, list_values=False, configspec = typeinfo)
                 self[typename][itemname] = ItemInfo(self, itemname, iteminfo)
         validator = Validator(get_custom_validators())
